@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Strings in Python </title>
+        <link href='style.css' rel="stylesheet">
+    </head>
+    <body>
+        <div>
+             <h1> Strings </h1>
+             <p> Strings in Python are used to display a sequence of text in the output </p>
+             <p> For Example:</p>
+             <img src = "c:\Users\yeshf\OneDrive\Pictures\Screenshots\Screenshot 2025-06-02 145653.png"/>
+             <p> The output of the code in the image above would be: </p>
+             <img src = "c:\Users\yeshf\OneDrive\Pictures\Screenshots\Screenshot 2025-06-02 150236.png"/>
+             <p> We can do this by using the built-in <strong> print() function in Python </strong></p>
+             <p> Anything that goes in the parenthesis and inside the parenthesis use double quotes and then type whatever you want to display in the output </p>
+             <p> If you want a better understanding of how strings work you can click the link below to watch a video about strings in Python. </p>
+             <a href="https://youtu.be/upJGyfd3hMw?si=w1WoSTgbAgzS5-x8" target="_blank">https://youtu.be/upJGyfd3hMw?si=w1WoSTgbAgzS5-x8</a>
+             <a href="./variablespy.html"> Next </a>
+             <h2> Challenge (optional)</h2>
+             <p> Make a program that uses the built in <strong>print()</strong> function to display your name in the output </p>
+
+        
+            
+        </div>
+        
+
+    </body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>r</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css">
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    #editor { height: 200px; border: 1px solid #ccc; }
+    #output {
+      background: black;
+      color: lime;
+      padding: 10px;
+      margin-top: 10px;
+      height: 150px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+    button { padding: 10px 20px; font-size: 16px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1></h1>
+  <textarea id="editor"></textarea><br>
+  <button id="runBtn" disabled>Run</button>
+  <div id="output">⏳ Loading...</div>
+
+  <!-- Pyodide -->
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
+
+  <!-- CodeMirror -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/python/python.min.js"></script>
+
+  <script>
+    let pyodide;
+    let editor;
+
+    async function main() {
+      pyodide = await loadPyodide();
+
+      // Add input support: override input() function
+      await pyodide.runPythonAsync(`
+import builtins
+def input(prompt=''):
+  from js import prompt as js_prompt
+  return js_prompt(prompt)
+builtins.input = input
+      `);
+
+      document.getElementById("output").textContent = "✅ Ready to take some code ";
+      document.getElementById("runBtn").disabled = false;
+    }
+
+    main();
+
+    // CodeMirror setup
+    editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
+      mode: "python",
+      lineNumbers: true,
+      indentUnit: 4,
+      tabSize: 4,
+      theme: "default"
+    });
+
+    document.getElementById("runBtn").addEventListener("click", async () => {
+      const code = editor.getValue();
+      const outputDiv = document.getElementById("output");
+      outputDiv.textContent = "";
+
+      let capturedOutput = [];
+      pyodide.setStdout({ batched: s => capturedOutput.push(s) });
+      pyodide.setStderr({ batched: s => capturedOutput.push("Error: " + s) });
+
+      try {
+        let result = await pyodide.runPythonAsync(code);
+        if (result !== undefined) {
+          capturedOutput.push(result.toString());
+        }
+      } catch (err) {
+        capturedOutput.push("❌ Exception:\n" + err);
+      }
+
+      outputDiv.textContent = capturedOutput.join("\n");
+    });
+  </script>
+</body>
+</html>

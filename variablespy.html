@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Variables in Python </title>
+        <link href='style.css' rel="stylesheet">
+    </head>
+    <body>
+        <div>
+            <h1> Variables in Python </h1>
+            <p> A variable in Python is a name that refers to a value stored in memory. It’s used to store data that your program can manipulate.</p>
+            <p> Python is dynamically typed. so you don't have to declare the type </p>
+        </div>
+        <div>
+            <h2> Rules for Python Variables </h2>
+            <ol>
+                <li>1. Must start with a <strong> letter </strong> or an <strong> underscore </strong> </li>
+                <li>2. Can contain letters, numbers, and underscores </li>
+                <li>3. <strong>Case-sensitive</strong> (name and Name are different) </li>
+                <li>4. No special characters or spaces </li>
+            </ol>
+        </div>
+        <div>
+            <h3>✅ Valid Example ✅ </h3>
+            <img src="c:\Users\yeshf\OneDrive\Pictures\Screenshot 2025-06-02 163723.png"/>
+        </div>
+        <div>
+            <h3> ❌ Invalid Example ❌  </h3>
+            <img src="c:\Users\yeshf\OneDrive\Pictures\Screenshot 2025-06-02 164203.png"/>
+        </div>
+        <div>
+            <h2> Printing Variables </h2>
+            <p> Printing variables means displaying their values using the print() function. </p>
+            <p> For Example: </p>
+            <img src="c:\Users\yeshf\OneDrive\Pictures\Screenshots\Screenshot 2025-06-02 164653.png"/>
+        </div>
+        
+        <div>
+            <p> If you want a better understanding of Variables in Python Click the link below to watch a video about Variables in Python </p>
+            <a href="https://youtu.be/qclBTldc8nE?si=PPZA5VHvBSDHEX0i" target="_blank"> https://youtu.be/qclBTldc8nE?si=PPZA5VHvBSDHEX0i </a>
+            <a href="./commentpy.html"> Next </a>
+        </div>
+        <div>
+            <h2> Challenge (optional)</h2>
+            <p> Make a program that has a variable called "age" and give it the value of your age and then finally print the variable </p>
+        </div>
+    </body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>r</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css">
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    #editor { height: 200px; border: 1px solid #ccc; }
+    #output {
+      background: black;
+      color: lime;
+      padding: 10px;
+      margin-top: 10px;
+      height: 150px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+    button { padding: 10px 20px; font-size: 16px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1></h1>
+  <textarea id="editor"></textarea><br>
+  <button id="runBtn" disabled>Run</button>
+  <div id="output">⏳ Loading...</div>
+
+  <!-- Pyodide -->
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
+
+  <!-- CodeMirror -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/python/python.min.js"></script>
+
+  <script>
+    let pyodide;
+    let editor;
+
+    async function main() {
+      pyodide = await loadPyodide();
+
+      // Add input support: override input() function
+      await pyodide.runPythonAsync(`
+import builtins
+def input(prompt=''):
+  from js import prompt as js_prompt
+  return js_prompt(prompt)
+builtins.input = input
+      `);
+
+      document.getElementById("output").textContent = "✅ Ready to take some code ";
+      document.getElementById("runBtn").disabled = false;
+    }
+
+    main();
+
+    // CodeMirror setup
+    editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
+      mode: "python",
+      lineNumbers: true,
+      indentUnit: 4,
+      tabSize: 4,
+      theme: "default"
+    });
+
+    document.getElementById("runBtn").addEventListener("click", async () => {
+      const code = editor.getValue();
+      const outputDiv = document.getElementById("output");
+      outputDiv.textContent = "";
+
+      let capturedOutput = [];
+      pyodide.setStdout({ batched: s => capturedOutput.push(s) });
+      pyodide.setStderr({ batched: s => capturedOutput.push("Error: " + s) });
+
+      try {
+        let result = await pyodide.runPythonAsync(code);
+        if (result !== undefined) {
+          capturedOutput.push(result.toString());
+        }
+      } catch (err) {
+        capturedOutput.push("❌ Exception:\n" + err);
+      }
+
+      outputDiv.textContent = capturedOutput.join("\n");
+    });
+  </script>
+</body>
+</html>
