@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> String Concantation in Python </title>
+        <link href='style.css' rel="stylesheet"/>
+    </head>
+    <body>
+        <div>
+            <h1> String Concantation </h1>
+            <p class= "pictures"> <strong> name = input("What is your name? ") <br> print(f"Hello!, {name}!) </strong> </p>
+            <p> In line 2 of the code above is called an <strong> f string </strong> it used to display variables in a sentence. </p>
+        </div>
+        <div>
+            <p> In order to use that you must put a f behind the quotes and place a variable in between curly brackets to display variables </p>
+        </div>
+        <div>
+            <p> If you want a better understanding of how String Concantation works then click the link below to watch a video about String Concantation in Python </p>
+            <a href="https://youtu.be/so-iBY56Psw?si=KA_VdbSrZ0KFgDbr" target="_blank"> https://youtu.be/so-iBY56Psw?si=KA_VdbSrZ0KFgDbr </a>
+            <a href="./controlflowpy.html"> Next </a>
+        </div>
+        <div>
+            <h2> Challenge (optional)</h2>
+            <p> Make a program that asks the user for their age and then print a mesage saying "You are {age} years old </p>
+        </div>
+    </body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>r</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css">
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    #editor { height: 200px; border: 1px solid #ccc; }
+    #output {
+      background: black;
+      color: lime;
+      padding: 10px;
+      margin-top: 10px;
+      height: 150px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+    button { padding: 10px 20px; font-size: 16px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1></h1>
+  <textarea id="editor"></textarea><br>
+  <button id="runBtn" disabled>Run</button>
+  <div id="output">⏳ Loading...</div>
+
+  <!-- Pyodide -->
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
+
+  <!-- CodeMirror -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/python/python.min.js"></script>
+
+  <script>
+    let pyodide;
+    let editor;
+
+    async function main() {
+      pyodide = await loadPyodide();
+
+      // Add input support: override input() function
+      await pyodide.runPythonAsync(`
+import builtins
+def input(prompt=''):
+  from js import prompt as js_prompt
+  return js_prompt(prompt)
+builtins.input = input
+      `);
+
+      document.getElementById("output").textContent = "✅ Ready to take some code ";
+      document.getElementById("runBtn").disabled = false;
+    }
+
+    main();
+
+    // CodeMirror setup
+    editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
+      mode: "python",
+      lineNumbers: true,
+      indentUnit: 4,
+      tabSize: 4,
+      theme: "default"
+    });
+
+    document.getElementById("runBtn").addEventListener("click", async () => {
+      const code = editor.getValue();
+      const outputDiv = document.getElementById("output");
+      outputDiv.textContent = "";
+
+      let capturedOutput = [];
+      pyodide.setStdout({ batched: s => capturedOutput.push(s) });
+      pyodide.setStderr({ batched: s => capturedOutput.push("Error: " + s) });
+
+      try {
+        let result = await pyodide.runPythonAsync(code);
+        if (result !== undefined) {
+          capturedOutput.push(result.toString());
+        }
+      } catch (err) {
+        capturedOutput.push("❌ Exception:\n" + err);
+      }
+
+      outputDiv.textContent = capturedOutput.join("\n");
+    });
+  </script>
+</body>
+</html>
