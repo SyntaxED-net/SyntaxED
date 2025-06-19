@@ -71,3 +71,7 @@ h4 {
 .pictures {
     background-color: rgb(3, 3, 37);
 }
+
+.center {
+    text-align: center;
+}
