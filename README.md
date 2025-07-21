@@ -1,1 +1,1 @@
-# SyntaxED
+# SyntaxED is a place where learners from all levels come along to either learn something new! or to sharpen their skills with us! We teach over a whole different concepts such as Math, Coding, Science, Geography etc.
